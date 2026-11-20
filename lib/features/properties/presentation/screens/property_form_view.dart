@@ -138,7 +138,7 @@ class _PropertyFormViewState extends State<PropertyFormView> {
 
                     // Property Type Dropdown
                     DropdownButtonFormField<PropertyType>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       decoration: const InputDecoration(
                         labelText: 'نوع العقار *',
                         prefixIcon: Icon(Icons.category_outlined),

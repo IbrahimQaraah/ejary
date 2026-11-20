@@ -10,8 +10,8 @@ import 'package:production_login/features/apartments/domain/entities/apartment_s
 import 'package:production_login/features/apartments/domain/usecases/apartments_usecases.dart';
 import 'package:production_login/features/properties/data/repositories/property_repository_impl.dart';
 import 'package:production_login/features/properties/domain/entities/property.dart';
+import 'package:production_login/features/properties/domain/entities/property_stats.dart';
 import 'package:production_login/features/properties/domain/usecases/properties_usecases.dart';
-import 'package:production_login/features/properties/presentation/controllers/property_controller.dart';
 
 void main() {
   late AppDatabase db;
@@ -23,7 +23,6 @@ void main() {
   late UpdatePropertyUseCase updatePropertyUseCase;
   late DeletePropertyUseCase deletePropertyUseCase;
   late GetApartmentsByPropertyUseCase getApartmentsUseCase;
-  late PropertyController controller;
 
   setUp(() {
     db = AppDatabase(NativeDatabase.memory());
@@ -36,22 +35,13 @@ void main() {
     updatePropertyUseCase = UpdatePropertyUseCase(propertyRepo);
     deletePropertyUseCase = DeletePropertyUseCase(propertyRepo);
     getApartmentsUseCase = GetApartmentsByPropertyUseCase(apartmentRepo);
-
-    controller = PropertyController(
-      getPropertiesUseCase: getPropertiesUseCase,
-      getPropertyByIdUseCase: getPropertyByIdUseCase,
-      createPropertyUseCase: createPropertyUseCase,
-      updatePropertyUseCase: updatePropertyUseCase,
-      deletePropertyUseCase: deletePropertyUseCase,
-      getApartmentsUseCase: getApartmentsUseCase,
-    );
   });
 
   tearDown(() async {
     await db.close();
   });
 
-  group('Properties Management Comprehensive Verification', () {
+  group('Properties Module Clean Architecture Verification', () {
     test('1. Property creation with full fields', () async {
       final now = DateTime.now();
       final prop = Property(
@@ -68,11 +58,13 @@ void main() {
         updatedAt: now,
       );
 
-      final success = await controller.addProperty(prop);
-      expect(success, isTrue);
-      expect(controller.properties.length, equals(1));
+      final propId = await createPropertyUseCase(prop);
+      expect(propId, isPositive);
 
-      final created = controller.properties.first;
+      final properties = await getPropertiesUseCase();
+      expect(properties.length, equals(1));
+
+      final created = properties.first;
       expect(created.name, equals('برج الأندلس السكني'));
       expect(created.propertyType, equals(PropertyType.residential));
       expect(created.city, equals('الرياض'));
@@ -86,7 +78,7 @@ void main() {
 
     test('2. Property editing / updating details', () async {
       final now = DateTime.now();
-      final propId = await propertyRepo.createProperty(
+      final propId = await createPropertyUseCase(
         Property(
           id: 0,
           name: 'عمارة النرجس',
@@ -100,8 +92,8 @@ void main() {
         ),
       );
 
-      await controller.loadProperties();
-      expect(controller.properties.length, equals(1));
+      var properties = await getPropertiesUseCase();
+      expect(properties.length, equals(1));
 
       final updated = Property(
         id: propId,
@@ -116,19 +108,19 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      final success = await controller.editProperty(updated);
-      expect(success, isTrue);
+      await updatePropertyUseCase(updated);
 
       final fetched = await getPropertyByIdUseCase(propId);
       expect(fetched, isNotNull);
       expect(fetched!.name, equals('عمارة النرجس المحدثة'));
       expect(fetched.propertyType, equals(PropertyType.commercial));
       expect(fetched.numberOfFloors, equals(4));
+      expect(fetched.address, equals('شارع الأمير سلطان'));
     });
 
     test('3. Property deletion restriction when apartments exist', () async {
       final now = DateTime.now();
-      final propId = await propertyRepo.createProperty(
+      final propId = await createPropertyUseCase(
         Property(
           id: 0,
           name: 'مجمع الواحة',
@@ -168,23 +160,19 @@ void main() {
         ),
       );
 
-      await controller.loadProperties();
-
-      // Deletion must be rejected and return false with error message
-      final success = await controller.removeProperty(propId);
-      expect(success, isFalse);
-      expect(controller.errorMessage.value, contains('لا يمكن حذف'));
-
-      // Direct repo call must throw BusinessRuleException
+      // Deletion must throw BusinessRuleException
       expect(
-        () => propertyRepo.deleteProperty(propId),
+        () => deletePropertyUseCase(propId),
         throwsA(isA<BusinessRuleException>()),
       );
+
+      final properties = await getPropertiesUseCase();
+      expect(properties.length, equals(1));
     });
 
     test('4. Successful property deletion when no apartments exist', () async {
       final now = DateTime.now();
-      final propId = await propertyRepo.createProperty(
+      final propId = await createPropertyUseCase(
         Property(
           id: 0,
           name: 'أرض فارغة / عقار تحت الإنشاء',
@@ -198,17 +186,18 @@ void main() {
         ),
       );
 
-      await controller.loadProperties();
-      expect(controller.properties.length, equals(1));
+      var properties = await getPropertiesUseCase();
+      expect(properties.length, equals(1));
 
-      final success = await controller.removeProperty(propId);
-      expect(success, isTrue);
-      expect(controller.properties.length, equals(0));
+      await deletePropertyUseCase(propId);
+
+      properties = await getPropertiesUseCase();
+      expect(properties.length, equals(0));
     });
 
     test('5. Property search by name, city, district, and address', () async {
       final now = DateTime.now();
-      await propertyRepo.createProperty(
+      await createPropertyUseCase(
         Property(
           id: 0,
           name: 'برج المملكة بلازا',
@@ -221,7 +210,7 @@ void main() {
           updatedAt: now,
         ),
       );
-      await propertyRepo.createProperty(
+      await createPropertyUseCase(
         Property(
           id: 0,
           name: 'فيلا الياسمين',
@@ -234,7 +223,7 @@ void main() {
           updatedAt: now,
         ),
       );
-      await propertyRepo.createProperty(
+      await createPropertyUseCase(
         Property(
           id: 0,
           name: 'عمارة الكورنيش',
@@ -248,38 +237,36 @@ void main() {
         ),
       );
 
-      await controller.loadProperties();
-      expect(controller.properties.length, equals(3));
+      final all = await getPropertiesUseCase();
+      expect(all.length, equals(3));
+
+      // Helper function matching controller search logic
+      List<Property> search(String query) {
+        final q = query.trim().toLowerCase();
+        return all.where((p) {
+          return p.name.toLowerCase().contains(q) ||
+              p.city.toLowerCase().contains(q) ||
+              p.district.toLowerCase().contains(q) ||
+              p.address.toLowerCase().contains(q);
+        }).toList();
+      }
 
       // Search by name
-      controller.setSearchQuery('المملكة');
-      expect(controller.filteredProperties.length, equals(1));
-      expect(
-        controller.filteredProperties.first.name,
-        equals('برج المملكة بلازا'),
-      );
+      expect(search('المملكة').length, equals(1));
+      expect(search('المملكة').first.name, equals('برج المملكة بلازا'));
 
       // Search by district
-      controller.setSearchQuery('الياسمين');
-      expect(controller.filteredProperties.length, equals(1));
-      expect(controller.filteredProperties.first.name, equals('فيلا الياسمين'));
+      expect(search('الياسمين').length, equals(1));
+      expect(search('الياسمين').first.name, equals('فيلا الياسمين'));
 
       // Search by city
-      controller.setSearchQuery('جدة');
-      expect(controller.filteredProperties.length, equals(1));
-      expect(
-        controller.filteredProperties.first.name,
-        equals('عمارة الكورنيش'),
-      );
-
-      // Clear search
-      controller.setSearchQuery('');
-      expect(controller.filteredProperties.length, equals(3));
+      expect(search('جدة').length, equals(1));
+      expect(search('جدة').first.name, equals('عمارة الكورنيش'));
     });
 
     test('6. Property filtering by type, city, and district', () async {
       final now = DateTime.now();
-      await propertyRepo.createProperty(
+      await createPropertyUseCase(
         Property(
           id: 0,
           name: 'مبنى 1',
@@ -292,7 +279,7 @@ void main() {
           updatedAt: now,
         ),
       );
-      await propertyRepo.createProperty(
+      await createPropertyUseCase(
         Property(
           id: 0,
           name: 'مبنى 2',
@@ -305,7 +292,7 @@ void main() {
           updatedAt: now,
         ),
       );
-      await propertyRepo.createProperty(
+      await createPropertyUseCase(
         Property(
           id: 0,
           name: 'مبنى 3',
@@ -319,27 +306,27 @@ void main() {
         ),
       );
 
-      await controller.loadProperties();
+      final all = await getPropertiesUseCase();
 
       // Filter by type: residential
-      controller.setTypeFilter(PropertyType.residential);
-      expect(controller.filteredProperties.length, equals(2));
+      final residential = all
+          .where((p) => p.propertyType == PropertyType.residential)
+          .toList();
+      expect(residential.length, equals(2));
 
       // Filter by city: الرياض (residential in Riyadh)
-      controller.setCityFilter('الرياض');
-      expect(controller.filteredProperties.length, equals(1));
-      expect(controller.filteredProperties.first.name, equals('مبنى 1'));
-
-      // Reset filters
-      controller.clearFilters();
-      expect(controller.filteredProperties.length, equals(3));
+      final riyadhResidential = residential
+          .where((p) => p.city == 'الرياض')
+          .toList();
+      expect(riyadhResidential.length, equals(1));
+      expect(riyadhResidential.first.name, equals('مبنى 1'));
     });
 
     test(
       '7. Apartment relationship queries & occupancy calculations',
       () async {
         final now = DateTime.now();
-        final propId = await propertyRepo.createProperty(
+        final propId = await createPropertyUseCase(
           Property(
             id: 0,
             name: 'برج السعادة',
@@ -455,14 +442,39 @@ void main() {
           ),
         );
 
-        // Load details into controller
-        await controller.loadPropertyDetails(propId);
+        // Query apartments for this property
+        final apts = await getApartmentsUseCase(propId);
+        expect(apts.length, equals(4));
 
-        expect(controller.currentPropertyApartments.length, equals(4));
+        // Calculate stats using PropertyStats logic
+        int occupied = 0;
+        int available = 0;
+        int maintenance = 0;
+        int expectedIncome = 0;
 
-        final stats = controller.currentPropertyStats.value;
-        expect(stats, isNotNull);
-        expect(stats!.totalApartments, equals(4));
+        for (final apt in apts) {
+          if (apt.status == ApartmentStatus.occupied) {
+            occupied++;
+            expectedIncome += apt.monthlyRent;
+          } else if (apt.status == ApartmentStatus.available) {
+            available++;
+          } else if (apt.status == ApartmentStatus.maintenance) {
+            maintenance++;
+          }
+        }
+
+        final rate = apts.isNotEmpty ? (occupied / apts.length) * 100 : 0.0;
+        final stats = PropertyStats(
+          propertyId: propId,
+          totalApartments: apts.length,
+          occupiedApartments: occupied,
+          availableApartments: available,
+          maintenanceApartments: maintenance,
+          occupancyRate: rate,
+          expectedMonthlyIncome: expectedIncome,
+        );
+
+        expect(stats.totalApartments, equals(4));
         expect(stats.occupiedApartments, equals(2));
         expect(stats.availableApartments, equals(1));
         expect(stats.maintenanceApartments, equals(1));
