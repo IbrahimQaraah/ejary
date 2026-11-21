@@ -8,15 +8,15 @@ enum PaymentMethod {
   String get displayName {
     switch (this) {
       case PaymentMethod.cash:
-        return 'Cash';
+        return 'نقداً';
       case PaymentMethod.bankTransfer:
-        return 'Bank Transfer';
+        return 'تحويل بنكي';
       case PaymentMethod.cheque:
-        return 'Cheque';
+        return 'شيك مصرفي';
       case PaymentMethod.creditCard:
-        return 'Credit Card';
+        return 'بطاقة بنكية / مدى';
       case PaymentMethod.other:
-        return 'Other';
+        return 'أخرى';
     }
   }
 }

@@ -445,11 +445,10 @@ class _ApartmentFormViewState extends State<ApartmentFormView> {
                     const SizedBox(height: 14),
 
                     // AC and Parking Switches
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceMuted,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    Material(
+                      color: AppColors.surfaceMuted,
+                      borderRadius: BorderRadius.circular(12),
+                      clipBehavior: Clip.antiAlias,
                       child: Column(
                         children: [
                           SwitchListTile(

@@ -17,6 +17,7 @@ abstract class PaymentRepository {
     required String billingPeriod,
     required int monthlyRent,
   });
+  Future<PaymentTransaction?> getPaymentById(int id);
   Future<ServiceBillBalance> calculateServiceBillBalance({
     required int serviceId,
     required int apartmentId,

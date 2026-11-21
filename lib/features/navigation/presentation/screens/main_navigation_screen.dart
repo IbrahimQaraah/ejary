@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../dashboard/presentation/screens/dashboard_view.dart';
 import '../../../more/presentation/screens/more_view.dart';
+import '../../../payments/presentation/screens/payments_list_view.dart';
 import '../../../properties/presentation/screens/properties_list_view.dart';
+import '../../../tenants/presentation/screens/tenants_list_view.dart';
 import '../controllers/navigation_controller.dart';
 
 class MainNavigationScreen extends StatelessWidget {
@@ -17,16 +19,8 @@ class MainNavigationScreen extends StatelessWidget {
     final List<Widget> pages = [
       const DashboardView(),
       const PropertiesListView(),
-      _buildSectionPlaceholder(
-        title: 'سجل المستأجرين والعقود',
-        subtitle: 'سيتم بناء الشاشة التفصيلية في المرحلة 5 وفق تسلسل التنفيذ',
-        icon: Icons.people_alt,
-      ),
-      _buildSectionPlaceholder(
-        title: 'سجل المقبوضات والدفعات',
-        subtitle: 'سيتم بناء الشاشة التفصيلية في المرحلة 6 وفق تسلسل التنفيذ',
-        icon: Icons.account_balance_wallet,
-      ),
+      const TenantsListView(),
+      const PaymentsListView(),
       const MoreView(),
     ];
 
@@ -73,53 +67,6 @@ class MainNavigationScreen extends StatelessWidget {
                 icon: Icon(Icons.grid_view_outlined),
                 activeIcon: Icon(Icons.grid_view),
                 label: 'المزيد',
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionPlaceholder({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-  }) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 48, color: AppColors.primary),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

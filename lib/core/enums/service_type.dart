@@ -8,15 +8,15 @@ enum ServiceType {
   String get displayName {
     switch (this) {
       case ServiceType.water:
-        return 'Water';
+        return 'مياه';
       case ServiceType.electricity:
-        return 'Electricity';
+        return 'كهرباء';
       case ServiceType.gas:
-        return 'Gas';
+        return 'غاز';
       case ServiceType.internet:
-        return 'Internet';
+        return 'إنترنت';
       case ServiceType.other:
-        return 'Other';
+        return 'صيانة وخدمات أخرى';
     }
   }
 }

@@ -75,16 +75,23 @@ class InitialBinding extends Bindings {
     Get.lazyPut(() => DeleteApartmentUseCase(Get.find()), fenix: true);
 
     // 5. Tenants UseCases
+    Get.lazyPut(() => GetAllTenantsUseCase(Get.find()), fenix: true);
+    Get.lazyPut(() => GetTenantByIdUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => GetTenantsForApartmentUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => GetActiveTenantUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => RegisterTenantUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => VacateTenantUseCase(Get.find()), fenix: true);
+    Get.lazyPut(() => UpdateTenantUseCase(Get.find()), fenix: true);
 
     // 6. Services UseCases
+    Get.lazyPut(() => GetAllServicesUseCase(Get.find()), fenix: true);
+    Get.lazyPut(() => GetServiceByIdUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => GetServicesForApartmentUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => CreateServiceBillUseCase(Get.find()), fenix: true);
 
     // 7. Payments UseCases
+    Get.lazyPut(() => GetAllPaymentsUseCase(Get.find()), fenix: true);
+    Get.lazyPut(() => GetPaymentByIdUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => GetPaymentsForApartmentUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => RecordPaymentUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => CalculateRentBalanceUseCase(Get.find()), fenix: true);
@@ -138,26 +145,45 @@ class InitialBinding extends Bindings {
     );
     Get.lazyPut(
       () => TenantController(
+        getAllTenantsUseCase: Get.find(),
+        getTenantByIdUseCase: Get.find(),
         getTenantsUseCase: Get.find(),
         getActiveTenantUseCase: Get.find(),
         registerTenantUseCase: Get.find(),
         vacateTenantUseCase: Get.find(),
+        updateTenantUseCase: Get.find(),
+        getApartmentsUseCase: Get.find(),
+        getApartmentByIdUseCase: Get.find(),
+        getPropertiesUseCase: Get.find(),
+        getPaymentsForApartmentUseCase: Get.find(),
       ),
       fenix: true,
     );
     Get.lazyPut(
       () => ServiceBillController(
+        getAllServicesUseCase: Get.find(),
+        getServiceByIdUseCase: Get.find(),
         getServicesUseCase: Get.find(),
         createServiceBillUseCase: Get.find(),
+        calculateServiceBalanceUseCase: Get.find(),
+        recordPaymentUseCase: Get.find(),
+        paymentRepository: Get.find(),
+        getPropertiesUseCase: Get.find(),
+        getApartmentsUseCase: Get.find(),
       ),
       fenix: true,
     );
     Get.lazyPut(
       () => PaymentController(
+        getAllPaymentsUseCase: Get.find(),
+        getPaymentByIdUseCase: Get.find(),
         getPaymentsUseCase: Get.find(),
         recordPaymentUseCase: Get.find(),
         calculateRentBalanceUseCase: Get.find(),
         calculateServiceBalanceUseCase: Get.find(),
+        getPropertiesUseCase: Get.find(),
+        getApartmentsUseCase: Get.find(),
+        getAllTenantsUseCase: Get.find(),
       ),
       fenix: true,
     );

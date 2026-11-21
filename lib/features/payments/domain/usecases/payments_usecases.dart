@@ -2,6 +2,21 @@ import '../entities/financial_summary.dart';
 import '../entities/payment.dart';
 import '../repositories/payment_repository.dart';
 
+class GetAllPaymentsUseCase {
+  final PaymentRepository repository;
+  GetAllPaymentsUseCase(this.repository);
+
+  Future<List<PaymentTransaction>> call({int? limit}) =>
+      repository.getAllPayments(limit: limit);
+}
+
+class GetPaymentByIdUseCase {
+  final PaymentRepository repository;
+  GetPaymentByIdUseCase(this.repository);
+
+  Future<PaymentTransaction?> call(int id) => repository.getPaymentById(id);
+}
+
 class GetPaymentsForApartmentUseCase {
   final PaymentRepository repository;
   GetPaymentsForApartmentUseCase(this.repository);

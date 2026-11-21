@@ -9,6 +9,27 @@ class GetTenantsForApartmentUseCase {
       repository.getTenantsForApartment(apartmentId);
 }
 
+class GetAllTenantsUseCase {
+  final TenantRepository repository;
+  GetAllTenantsUseCase(this.repository);
+
+  Future<List<Tenant>> call() => repository.getAllTenants();
+}
+
+class GetTenantByIdUseCase {
+  final TenantRepository repository;
+  GetTenantByIdUseCase(this.repository);
+
+  Future<Tenant?> call(int id) => repository.getTenantById(id);
+}
+
+class UpdateTenantUseCase {
+  final TenantRepository repository;
+  UpdateTenantUseCase(this.repository);
+
+  Future<void> call(Tenant tenant) => repository.updateTenant(tenant);
+}
+
 class GetActiveTenantUseCase {
   final TenantRepository repository;
   GetActiveTenantUseCase(this.repository);

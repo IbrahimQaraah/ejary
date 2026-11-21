@@ -33,6 +33,14 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
+  Future<PaymentTransaction?> getPaymentById(int id) async {
+    final entry = await (db.select(
+      db.payments,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    return entry != null ? _toDomain(entry) : null;
+  }
+
+  @override
   Future<List<PaymentTransaction>> getAllPayments({int? limit}) async {
     final query = db.select(db.payments)
       ..orderBy([(t) => OrderingTerm.desc(t.paymentDate)]);

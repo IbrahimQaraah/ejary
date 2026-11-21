@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/enums/payer_responsibility.dart';
+import '../../../../core/enums/payment_type.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/app_card.dart';
@@ -194,12 +196,14 @@ class DashboardView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'نسبة الإشغال العام',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              const Expanded(
+                child: Text(
+                  'نسبة الإشغال العام',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               Container(
@@ -478,31 +482,31 @@ class DashboardView extends StatelessWidget {
             leading: CircleAvatar(
               backgroundColor: isReversal
                   ? AppColors.dangerLight
-                  : (tx.paidBy.name == 'tenant'
+                  : (tx.paidBy == PayerResponsibility.tenant
                         ? AppColors.successLight
                         : AppColors.infoLight),
               child: Icon(
                 isReversal
                     ? Icons.replay
-                    : (tx.paidBy.name == 'tenant'
+                    : (tx.paidBy == PayerResponsibility.tenant
                           ? Icons.arrow_downward
                           : Icons.arrow_upward),
                 color: isReversal
                     ? AppColors.danger
-                    : (tx.paidBy.name == 'tenant'
+                    : (tx.paidBy == PayerResponsibility.tenant
                           ? AppColors.success
                           : AppColors.info),
                 size: 20,
               ),
             ),
             title: Text(
-              tx.paymentType.name == 'rent'
+              tx.paymentType == PaymentType.rent
                   ? 'دفعة إيجار (شقة #${tx.apartmentId})'
                   : 'فاتورة خدمات (شقة #${tx.apartmentId})',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             subtitle: Text(
-              '${tx.paidBy.name == 'tenant' ? "دُفعت بواسطة المستأجر" : "سُددت بواسطة المالك"} • طريقة الدفع: ${tx.paymentMethod.name}',
+              '${tx.paidBy == PayerResponsibility.tenant ? "دُفعت بواسطة المستأجر" : "سُددت بواسطة المالك"} • طريقة الدفع: ${tx.paymentMethod.displayName}',
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,

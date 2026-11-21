@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../apartments/presentation/screens/apartments_list_view.dart';
+import '../../../reports/presentation/screens/reports_view.dart';
+import '../../../services/presentation/screens/services_list_view.dart';
+import '../../../settings/presentation/screens/settings_view.dart';
 
 class MoreView extends StatelessWidget {
   const MoreView({super.key});
@@ -39,13 +42,7 @@ class MoreView extends StatelessWidget {
             iconColor: AppColors.secondary,
             title: 'فواتير الخدمات والمرافق',
             subtitle: 'الكهرباء، المياه، الغاز، الإنترنت وقراءات العدادات',
-            onTap: () {
-              Get.snackbar(
-                'الخدمات',
-                'سيتم فتح شاشة فواتير الخدمات في الخطوة المخصصة',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap: () => Get.to(() => const ServicesListView()),
           ),
           const SizedBox(height: 20),
 
@@ -65,13 +62,7 @@ class MoreView extends StatelessWidget {
             title: 'التقارير المالية المتقدمة',
             subtitle:
                 'الدخل الشهري، نسبة التحصيل، ونفقات المالك مقابل المستأجر',
-            onTap: () {
-              Get.snackbar(
-                'التقارير',
-                'سيتم تفعيل شاشة التقارير التفصيلية في المرحلة 8',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap: () => Get.to(() => const ReportsView()),
           ),
           const SizedBox(height: 20),
 
@@ -88,15 +79,9 @@ class MoreView extends StatelessWidget {
           _buildMenuItem(
             icon: Icons.tune,
             iconColor: const Color(0xFF5D6D7E),
-            title: 'إعدادات التطبيق',
-            subtitle: 'العملة الافتراضية، التنبيهات والنسخ الاحتياطي',
-            onTap: () {
-              Get.snackbar(
-                'الإعدادات',
-                'خيارات النظام وتخصيص الواجهات',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            title: 'إعدادات التطبيق والنسخ الاحتياطي',
+            subtitle: 'فحص الجداول الستة، والنسخ الاحتياطي والاستعادة',
+            onTap: () => Get.to(() => const SettingsView()),
           ),
           const SizedBox(height: 8),
           _buildMenuItem(

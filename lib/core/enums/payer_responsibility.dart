@@ -5,9 +5,9 @@ enum PayerResponsibility {
   String get displayName {
     switch (this) {
       case PayerResponsibility.owner:
-        return 'Owner';
+        return 'المالك';
       case PayerResponsibility.tenant:
-        return 'Tenant';
+        return 'المستأجر';
     }
   }
 }

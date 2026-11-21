@@ -5,9 +5,9 @@ enum PaymentType {
   String get displayName {
     switch (this) {
       case PaymentType.rent:
-        return 'Rent';
+        return 'إيجار';
       case PaymentType.service:
-        return 'Service Bill';
+        return 'فاتورة خدمات ومرافق';
     }
   }
 }
