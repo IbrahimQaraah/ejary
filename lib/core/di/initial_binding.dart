@@ -62,12 +62,15 @@ class InitialBinding extends Bindings {
     Get.lazyPut(() => DeletePropertyUseCase(Get.find()), fenix: true);
 
     // 4. Apartments UseCases
+    Get.lazyPut(() => GetApartmentsUseCase(Get.find()), fenix: true);
+    Get.lazyPut(() => GetApartmentByIdUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => GetApartmentsByPropertyUseCase(Get.find()), fenix: true);
     Get.lazyPut(
       () => GetApartmentSpecificationUseCase(Get.find()),
       fenix: true,
     );
     Get.lazyPut(() => CreateApartmentUseCase(Get.find()), fenix: true);
+    Get.lazyPut(() => UpdateApartmentUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => UpdateApartmentStatusUseCase(Get.find()), fenix: true);
     Get.lazyPut(() => DeleteApartmentUseCase(Get.find()), fenix: true);
 
@@ -120,11 +123,16 @@ class InitialBinding extends Bindings {
     );
     Get.lazyPut(
       () => ApartmentController(
-        getApartmentsUseCase: Get.find(),
+        getAllApartmentsUseCase: Get.find(),
+        getApartmentByIdUseCase: Get.find(),
+        getApartmentsByPropertyUseCase: Get.find(),
         getSpecificationUseCase: Get.find(),
         createApartmentUseCase: Get.find(),
+        updateApartmentUseCase: Get.find(),
         updateApartmentStatusUseCase: Get.find(),
         deleteApartmentUseCase: Get.find(),
+        getPropertiesUseCase: Get.find(),
+        getActiveTenantUseCase: Get.find(),
       ),
       fenix: true,
     );

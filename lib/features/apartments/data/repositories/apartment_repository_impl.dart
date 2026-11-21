@@ -172,6 +172,94 @@ class ApartmentRepositoryImpl implements ApartmentRepository {
   }
 
   @override
+  Future<void> updateApartmentAndSpecification({
+    required Apartment apartment,
+    required ApartmentSpecification specification,
+  }) async {
+    await db.transaction(() async {
+      final current = await (db.select(
+        db.apartments,
+      )..where((t) => t.id.equals(apartment.id))).getSingleOrNull();
+
+      if (current == null) {
+        throw const BusinessRuleException('الشقة المحددة غير موجودة.');
+      }
+
+      // Check uniqueness if apartment number or property changed
+      if (current.apartmentNumber != apartment.apartmentNumber ||
+          current.propertyId != apartment.propertyId) {
+        final existing =
+            await (db.select(db.apartments)..where(
+                  (t) =>
+                      t.propertyId.equals(apartment.propertyId) &
+                      t.apartmentNumber.equals(apartment.apartmentNumber) &
+                      t.id.isNotValue(apartment.id),
+                ))
+                .getSingleOrNull();
+
+        if (existing != null) {
+          throw BusinessRuleException(
+            'رقم الشقة "${apartment.apartmentNumber}" مسجل مسبقاً في هذا العقار.',
+          );
+        }
+      }
+
+      final now = DateTime.now();
+      await (db.update(
+        db.apartments,
+      )..where((t) => t.id.equals(apartment.id))).write(
+        ApartmentsCompanion(
+          propertyId: Value(apartment.propertyId),
+          apartmentNumber: Value(apartment.apartmentNumber),
+          floorNumber: Value(apartment.floorNumber),
+          area: Value(apartment.area),
+          monthlyRent: Value(apartment.monthlyRent),
+          status: Value(apartment.status),
+          description: Value(apartment.description),
+          updatedAt: Value(now),
+        ),
+      );
+
+      final existingSpec = await (db.select(
+        db.apartmentSpecifications,
+      )..where((t) => t.apartmentId.equals(apartment.id))).getSingleOrNull();
+
+      if (existingSpec == null) {
+        await db
+            .into(db.apartmentSpecifications)
+            .insert(
+              ApartmentSpecificationsCompanion.insert(
+                apartmentId: apartment.id,
+                bedrooms: Value(specification.bedrooms),
+                bathrooms: Value(specification.bathrooms),
+                livingRooms: Value(specification.livingRooms),
+                kitchens: Value(specification.kitchens),
+                balconies: Value(specification.balconies),
+                hasAc: Value(specification.hasAc),
+                hasParking: Value(specification.hasParking),
+                additionalFeatures: Value(specification.additionalFeatures),
+              ),
+            );
+      } else {
+        await (db.update(
+          db.apartmentSpecifications,
+        )..where((t) => t.apartmentId.equals(apartment.id))).write(
+          ApartmentSpecificationsCompanion(
+            bedrooms: Value(specification.bedrooms),
+            bathrooms: Value(specification.bathrooms),
+            livingRooms: Value(specification.livingRooms),
+            kitchens: Value(specification.kitchens),
+            balconies: Value(specification.balconies),
+            hasAc: Value(specification.hasAc),
+            hasParking: Value(specification.hasParking),
+            additionalFeatures: Value(specification.additionalFeatures),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
   Future<void> updateApartmentStatus(
     int apartmentId,
     ApartmentStatus status,

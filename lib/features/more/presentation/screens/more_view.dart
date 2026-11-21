@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../apartments/presentation/screens/apartments_list_view.dart';
 
 class MoreView extends StatelessWidget {
   const MoreView({super.key});
@@ -30,13 +31,7 @@ class MoreView extends StatelessWidget {
             iconColor: AppColors.primary,
             title: 'إدارة الشقق والوحدات',
             subtitle: 'المواصفات، التجهيزات وحالة الإشغال',
-            onTap: () {
-              Get.snackbar(
-                'الشقق',
-                'سيتم فتح شاشة إدارة الشقق في الخطوة التالية',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap: () => Get.to(() => const ApartmentsListView()),
           ),
           const SizedBox(height: 8),
           _buildMenuItem(

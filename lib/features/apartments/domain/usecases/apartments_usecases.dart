@@ -3,6 +3,20 @@ import '../entities/apartment.dart';
 import '../entities/apartment_specification.dart';
 import '../repositories/apartment_repository.dart';
 
+class GetApartmentsUseCase {
+  final ApartmentRepository repository;
+  GetApartmentsUseCase(this.repository);
+
+  Future<List<Apartment>> call() => repository.getAllApartments();
+}
+
+class GetApartmentByIdUseCase {
+  final ApartmentRepository repository;
+  GetApartmentByIdUseCase(this.repository);
+
+  Future<Apartment?> call(int id) => repository.getApartmentById(id);
+}
+
 class GetApartmentsByPropertyUseCase {
   final ApartmentRepository repository;
   GetApartmentsByPropertyUseCase(this.repository);
@@ -27,6 +41,19 @@ class CreateApartmentUseCase {
     required Apartment apartment,
     required ApartmentSpecification specification,
   }) => repository.createApartment(
+    apartment: apartment,
+    specification: specification,
+  );
+}
+
+class UpdateApartmentUseCase {
+  final ApartmentRepository repository;
+  UpdateApartmentUseCase(this.repository);
+
+  Future<void> call({
+    required Apartment apartment,
+    required ApartmentSpecification specification,
+  }) => repository.updateApartmentAndSpecification(
     apartment: apartment,
     specification: specification,
   );

@@ -13,6 +13,10 @@ abstract class ApartmentRepository {
   });
   Future<void> updateApartment(Apartment apartment);
   Future<void> updateSpecification(ApartmentSpecification specification);
+  Future<void> updateApartmentAndSpecification({
+    required Apartment apartment,
+    required ApartmentSpecification specification,
+  });
   Future<void> updateApartmentStatus(int apartmentId, ApartmentStatus status);
   Future<void> deleteApartment(int id);
 }

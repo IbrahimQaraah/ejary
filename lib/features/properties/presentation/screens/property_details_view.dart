@@ -8,6 +8,8 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/stat_card.dart';
 import '../../../apartments/domain/entities/apartment.dart';
+import '../../../apartments/presentation/screens/apartment_details_view.dart';
+import '../../../apartments/presentation/screens/apartment_form_view.dart';
 import '../controllers/property_controller.dart';
 import 'property_form_view.dart';
 
@@ -121,6 +123,14 @@ class PropertyDetailsView extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                  TextButton.icon(
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('إضافة شقة'),
+                    onPressed: () => Get.to(
+                      () =>
+                          ApartmentFormView(preselectedPropertyId: property.id),
+                    ),
                   ),
                 ],
               ),
@@ -448,6 +458,7 @@ class PropertyDetailsView extends StatelessWidget {
         final isAvailable = apt.status == ApartmentStatus.available;
 
         return AppCard(
+          onTap: () => Get.to(() => ApartmentDetailsView(apartmentId: apt.id)),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
